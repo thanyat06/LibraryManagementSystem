@@ -90,6 +90,22 @@ namespace LibraryManagementSystem.Repositories
 
             return null;
         }
+        public void UpdatePaymentStatus(int paymentId, string status)
+        {
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = @"UPDATE Payments
+                             SET PaymentStatus = @Status
+                             WHERE PaymentId = @Id";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+
+            cmd.Parameters.AddWithValue("@Status", status);
+            cmd.Parameters.AddWithValue("@Id", paymentId);
+
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
 
     }
 }
