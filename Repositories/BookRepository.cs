@@ -62,5 +62,32 @@ namespace LibraryManagementSystem.Repositories
             return books;
         }
 
+        public Book? GetBookById(int id)
+        {
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = "SELECT * FROM Books WHERE BookId = @BookId";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@BookId", id);
+
+            con.Open();
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new Book(
+                    Convert.ToInt32(reader["BookId"]),
+                    reader["Title"].ToString()!,
+                    reader["Author"].ToString()!,
+                    reader["Category"].ToString()!,
+                    Convert.ToInt32(reader["TotalCopies"]),
+                    Convert.ToInt32(reader["AvailableCopies"])
+                );
+            }
+
+            return null;
+        }
     }
 }
