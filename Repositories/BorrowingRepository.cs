@@ -37,6 +37,90 @@ namespace LibraryManagementSystem.Repositories
             con.Open();
             cmd.ExecuteNonQuery();
         }
+        public List<Borrowing> GetAllBorrowings()
+        {
+            List<Borrowing> borrowings = new List<Borrowing>();
 
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = "SELECT * FROM Borrowings";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+
+            con.Open();
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Borrowing borrowing = new Borrowing(
+                    Convert.ToInt32(reader["BorrowingId"]),
+                    Convert.ToInt32(reader["BookId"]),
+                    reader["BorrowerName"].ToString()!,
+                    reader["BorrowerPhone"].ToString()!,
+                    Convert.ToDateTime(reader["BorrowDate"]),
+                    Convert.ToDateTime(reader["DueDate"]),
+                    reader["ReturnDate"] == DBNull.Value
+                        ? null
+                        : Convert.ToDateTime(reader["ReturnDate"]),
+                    reader["Status"].ToString()!
+                );
+
+                borrowings.Add(borrowing);
+            }
+
+            return borrowings;
+        }
+
+        public Borrowing? GetBorrowingById(int id)
+        {
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = "SELECT * FROM Borrowings WHERE BorrowingId = @Id";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+
+            con.Open();
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new Borrowing(
+                    Convert.ToInt32(reader["BorrowingId"]),
+                    Convert.ToInt32(reader["BookId"]),
+                    reader["BorrowerName"].ToString()!,
+                    reader["BorrowerPhone"].ToString()!,
+                    Convert.ToDateTime(reader["BorrowDate"]),
+                    Convert.ToDateTime(reader["DueDate"]),
+                    reader["ReturnDate"] == DBNull.Value
+                        ? null
+                        : Convert.ToDateTime(reader["ReturnDate"]),
+                    reader["Status"].ToString()!
+                );
+            }
+
+            return null;
+        }
+
+        public void ReturnBook(int borrowingId, DateTime returnDate)
+        {
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = @"UPDATE Borrowings
+                             SET ReturnDate = @ReturnDate,
+                                 Status = 'Returned'
+                             WHERE BorrowingId = @Id
+                             AND Status = 'Borrowed'";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+
+            cmd.Parameters.AddWithValue("@ReturnDate", returnDate.Date);
+            cmd.Parameters.AddWithValue("@Id", borrowingId);
+
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
     }
 }
