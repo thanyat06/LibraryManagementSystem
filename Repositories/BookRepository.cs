@@ -10,7 +10,7 @@ namespace LibraryManagementSystem.Repositories
     public class BookRepository
     {
         private string connectionString =
-            @"Server=.\SQLEXPRESS;Database=LibraryManagementDB;Trusted_Connection=True;TrustServerCertificate=True;";
+            @"Server=(local)\SQLEXPRESS;Database=LibraryManagementDB;Trusted_Connection=True;TrustServerCertificate=True;";
 
         public void AddBook(Book book)
         {
