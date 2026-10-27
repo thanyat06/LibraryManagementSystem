@@ -33,5 +33,35 @@ namespace LibraryManagementSystem.Repositories
             con.Open();
             cmd.ExecuteNonQuery();
         }
+        public List<Payment> GetAllPayments()
+        {
+            List<Payment> payments = new List<Payment>();
+
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = "SELECT * FROM Payments";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+
+            con.Open();
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Payment payment = new Payment(
+                    Convert.ToInt32(reader["PaymentId"]),
+                    Convert.ToInt32(reader["BorrowingId"]),
+                    Convert.ToDecimal(reader["Amount"]),
+                    Convert.ToDateTime(reader["PaymentDate"]),
+                    reader["PaymentMethod"].ToString()!,
+                    reader["PaymentStatus"].ToString()!
+                );
+
+                payments.Add(payment);
+            }
+
+            return payments;
+        }
     }
 }
