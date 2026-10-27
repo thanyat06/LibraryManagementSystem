@@ -63,5 +63,33 @@ namespace LibraryManagementSystem.Repositories
 
             return payments;
         }
+        public Payment? GetPaymentById(int id)
+        {
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = "SELECT * FROM Payments WHERE PaymentId = @Id";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+            cmd.Parameters.AddWithValue("@Id", id);
+
+            con.Open();
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return new Payment(
+                    Convert.ToInt32(reader["PaymentId"]),
+                    Convert.ToInt32(reader["BorrowingId"]),
+                    Convert.ToDecimal(reader["Amount"]),
+                    Convert.ToDateTime(reader["PaymentDate"]),
+                    reader["PaymentMethod"].ToString()!,
+                    reader["PaymentStatus"].ToString()!
+                );
+            }
+
+            return null;
+        }
+
     }
 }
