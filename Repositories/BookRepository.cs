@@ -31,5 +31,36 @@ namespace LibraryManagementSystem.Repositories
             con.Open();
             cmd.ExecuteNonQuery();
         }
+        public List<Book> GetAllBooks()
+        {
+            List<Book> books = new List<Book>();
+
+            using SqlConnection con = new SqlConnection(connectionString);
+
+            string query = "SELECT * FROM Books";
+
+            using SqlCommand cmd = new SqlCommand(query, con);
+
+            con.Open();
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Book book = new Book(
+                    Convert.ToInt32(reader["BookId"]),
+                    reader["Title"].ToString()!,
+                    reader["Author"].ToString()!,
+                    reader["Category"].ToString()!,
+                    Convert.ToInt32(reader["TotalCopies"]),
+                    Convert.ToInt32(reader["AvailableCopies"])
+                );
+
+                books.Add(book);
+            }
+
+            return books;
+        }
+
     }
 }
